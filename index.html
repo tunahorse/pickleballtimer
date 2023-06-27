@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pickleball Timer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css">
+  <style>
+    .navbar {
+      background-color: #F8F9FA;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .navbar .navbar-brand {
+      margin: 0 auto;
+      color: #2C5282;
+    }
+    
+    .timer {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .round {
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      margin: 0 5px;
+    }
+    
+    .form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .label {
+      width: 200px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Pickleball Timer</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="timer" id="timer">00:00</div>
+    
+    <div class="round" id="currentRound">Game 1</div>
+    
+    <div class="controls">
+      <button class="btn btn-primary" id="startBtn">Start</button>
+      <button class="btn btn-primary" id="pauseBtn" disabled>Pause</button>
+      <button class="btn btn-primary" id="resetBtn" disabled>Reset</button>
+    </div>
+    
+    <form class="form">
+      <div class="form-group">
+        <label class="label" for="games">Games:</label>
+        <input class="form-control w-25" type="number" id="games" min="1" value="3">
+      </div>
+      <div class="form-group">
+        <label class="label" for="gameDuration">Game Duration (minutes):</label>
+        <input class="form-control w-25" type="number" id="gameDuration" min="1" value="15">
+      </div>
+      <button class="btn btn-primary" type="submit">Set Timer</button>
+    </form>
+  </div>
+  
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js"></script>
+  <script>
+    var countdown;
+    var currentSeconds;
+    var gamesInput = document.getElementById("games");
+    var gameDurationInput = document.getElementById("gameDuration");
+    var startBtn = document.getElementById("startBtn");
+    var pauseBtn = document.getElementById("pauseBtn");
+    var resetBtn = document.getElementById("resetBtn");
+    var timerDisplay = document.getElementById("timer");
+    var currentRoundDisplay = document.getElementById("currentRound");
+    var currentGame = 1;
+    
+    function startTimer() {
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resetBtn.disabled = false;
+
+      var totalMinutes = parseInt(gameDurationInput.value);
+      currentSeconds = totalMinutes * 60;
+
+      countdown = setInterval(function() {
+        if (currentSeconds === 0) {
+          clearInterval(countdown);
+          timerDisplay.innerHTML = "Game Complete!";
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          resetBtn.disabled = true;
+          currentGame++;
+          currentRoundDisplay.innerHTML = "Game " + currentGame;
+          return;
+        }
+
+        var minutes = Math.floor(currentSeconds / 60);
+        var seconds = currentSeconds % 60;
+
+        timerDisplay.innerHTML = minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+
+        currentSeconds--;
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(countdown);
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = false;
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      timerDisplay.innerHTML = "00:00";
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+      currentGame = 1;
+      currentRoundDisplay.innerHTML = "Game " + currentGame;
+    }
+
+    document.querySelector("form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      resetTimer();
+      startTimer();
+    });
+
+    startBtn.addEventListener("click", startTimer);
+    pauseBtn.addEventListener("click", pauseTimer);
+    resetBtn.addEventListener("click", resetTimer);
+  </script>
+</body>
+</html>
